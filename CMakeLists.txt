@@ -42,6 +42,7 @@ if(NOT OpenCV_FOUND)
 endif()
 
 find_package(Eigen3 3.1.0 REQUIRED)
+find_package(PCL REQUIRED)
 
 set (DYNAMIC_RECONFIGURE_PATH ros/config/dynamic_reconfigure.cfg)
 execute_process(COMMAND chmod a+x ${DYNAMIC_RECONFIGURE_PATH}
@@ -88,6 +89,7 @@ ${PROJECT_SOURCE_DIR}/orb_slam2/include
 ${PROJECT_SOURCE_DIR}/ros/include
 ${EIGEN3_INCLUDE_DIR}
 ${catkin_INCLUDE_DIRS}
+${PCL_INCLUDE_DIRS}
 )
 
 include(${PROJECT_SOURCE_DIR}/orb_slam2/Thirdparty/DBoW2/CMakeLists.txt)

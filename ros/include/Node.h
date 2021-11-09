@@ -43,12 +43,22 @@
 #include <message_filters/sync_policies/approximate_time.h>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/point_cloud2_iterator.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/MultiArrayDimension.h>
+// PCL
+#include <pcl_ros/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl_ros/io/pcd_io.h>
 
 #include "System.h"
 
+typedef pcl::PointXYZRGB PointT;
+typedef pcl::PointCloud<PointT> PointCloud;
 
 
 class Node
@@ -67,6 +77,7 @@ class Node
 
   private:
     void PublishMapPoints (std::vector<ORB_SLAM2::MapPoint*> map_points);
+    void PublishCurrentMapPointsColor (std::vector<ORB_SLAM2::MapPoint*> map_points);
     void PublishPositionAsTransform (cv::Mat position);
     void PublishPositionAsPoseStamped(cv::Mat position);
     void PublishGBAStatus (bool gba_status);
@@ -87,6 +98,7 @@ class Node
 
     image_transport::Publisher rendered_image_publisher_;
     ros::Publisher map_points_publisher_;
+    ros::Publisher current_map_points_publisher_;
     ros::Publisher pose_publisher_;
     ros::Publisher status_gba_publisher_;
 

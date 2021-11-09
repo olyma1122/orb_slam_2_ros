@@ -41,9 +41,11 @@ class Map
 public:
     Map();
 
+    void AddCurrentMapPoint(MapPoint *pMP);
     void AddKeyFrame(KeyFrame* pKF);
     void AddMapPoint(MapPoint* pMP);
     void EraseMapPoint(MapPoint* pMP);
+    void EraseCurrentMapPoint();
     void EraseKeyFrame(KeyFrame* pKF);
     void SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs);
     void InformNewBigChange();
@@ -51,6 +53,7 @@ public:
 
     std::vector<KeyFrame*> GetAllKeyFrames();
     std::vector<MapPoint*> GetAllMapPoints();
+    std::vector<MapPoint*> GetCurrentMapPoints();
     std::vector<MapPoint*> GetReferenceMapPoints();
 
     long unsigned int MapPointsInMap();
@@ -70,6 +73,7 @@ public:
 protected:
     std::set<MapPoint*> mspMapPoints;
     std::set<KeyFrame*> mspKeyFrames;
+    std::set<MapPoint*> mspCurrentMapPoints;
 
     std::vector<MapPoint*> mvpReferenceMapPoints;
 

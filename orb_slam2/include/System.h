@@ -26,10 +26,12 @@
 #include <thread>
 #include <unistd.h>
 #include <opencv2/core/core.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #include <sys/resource.h>
 
 
 #include "Tracking.h"
+#include "Frame.h"
 #include "FrameDrawer.h"
 #include "Map.h"
 #include "LocalMapping.h"
@@ -134,6 +136,8 @@ public:
     cv::Mat DrawCurrentFrame ();
 
     std::vector<MapPoint*> GetAllMapPoints();
+    std::vector<MapPoint*> GetCurrentMapPoints();
+    std::vector<MapPoint*> current_map_points;
 
 private:
     bool SetCallStackSize (const rlim_t kNewStackSize);

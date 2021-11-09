@@ -398,6 +398,17 @@ void Tracking::Track()
         // Update drawer
         mpFrameDrawer->Update(this);
 
+        // Eraset Current Map Points
+        mpMap->EraseCurrentMapPoint();
+        // Add the current map points in the vector
+        for (int i = 0; i < mCurrentFrame.N; i++)
+        {
+            if (mCurrentFrame.mvpMapPoints[i] && !mCurrentFrame.mvbOutlier[i])
+            {
+                mpMap->AddCurrentMapPoint(mCurrentFrame.mvpMapPoints[i]);
+            }
+        }
+
         // If tracking were good, check if we insert a keyframe
         if(bOK)
         {

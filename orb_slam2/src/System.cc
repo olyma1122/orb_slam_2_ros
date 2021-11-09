@@ -22,6 +22,8 @@
 
 #include "System.h"
 #include "Converter.h"
+#include <opencv2/core/core.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #include <thread>
 #include <iomanip>
 
@@ -273,6 +275,20 @@ void System::TrackMonocular(const cv::Mat &im, const double &timestamp)
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
 
+    current_map_points.clear();
+
+    for(int i = 0; i < mpTracker->mCurrentFrame.N; i++){
+
+        if(mpTracker->mCurrentFrame.mvpMapPoints[i] && !mpTracker->mCurrentFrame.mvbOutlier[i]){
+            current_map_points.insert(current_map_points.end(), mpTracker->mCurrentFrame.mvpMapPoints[i]);
+
+            // std::cout << mpTracker->mCurrentFrame.mvpMapPoints[i]->GetWorldPos().at<float>(0) << std::endl;
+            // std::cout << mpTracker->mCurrentFrame.mvpMapPoints[i]->GetWorldPos().at<float>(1) << std::endl;
+            // std::cout << mpTracker->mCurrentFrame.mvpMapPoints[i]->GetWorldPos().at<float>(2) << std::endl;
+
+        }
+
+    }
     current_position_ = Tcw;
 }
 
@@ -498,6 +514,9 @@ std::vector<MapPoint*> System::GetAllMapPoints() {
   return mpMap->GetAllMapPoints();
 }
 
+std::vector<MapPoint*> System::GetCurrentMapPoints() {
+  return mpMap->GetCurrentMapPoints();
+}
 
 bool System::SetCallStackSize (const rlim_t kNewStackSize) {
     struct rlimit rlimit;

@@ -2,6 +2,16 @@
 
 #include <iostream>
 
+#include <pcl_ros/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl_ros/io/pcd_io.h>
+#include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/MultiArrayDimension.h>
+typedef pcl::PointXYZRGB PointT;
+typedef pcl::PointCloud<PointT> PointCloud;
+
+
 Node::Node (ORB_SLAM2::System::eSensor sensor, ros::NodeHandle &node_handle, image_transport::ImageTransport &image_transport) :  image_transport_(image_transport) {
   name_of_node_ = ros::this_node::getName();
   node_handle_ = node_handle;
@@ -52,6 +62,7 @@ void Node::Init () {
   rendered_image_publisher_ = image_transport_.advertise (name_of_node_+"/debug_image", 1);
   if (publish_pointcloud_param_) {
     map_points_publisher_ = node_handle_.advertise<sensor_msgs::PointCloud2> (name_of_node_+"/map_points", 1);
+    current_map_points_publisher_ = node_handle_.advertise<PointCloud> (name_of_node_+"/current_map_points", 1);
   }
 
   // Enable publishing camera's pose as PoseStamped message
@@ -80,6 +91,7 @@ void Node::Update () {
 
   if (publish_pointcloud_param_) {
     PublishMapPoints (orb_slam_->GetAllMapPoints());
+    PublishCurrentMapPointsColor (orb_slam_->current_map_points);
   }
 
   PublishGBAStatus (orb_slam_->isRunningGBA());
@@ -90,6 +102,26 @@ void Node::Update () {
 void Node::PublishMapPoints (std::vector<ORB_SLAM2::MapPoint*> map_points) {
   sensor_msgs::PointCloud2 cloud = MapPointsToPointCloud (map_points);
   map_points_publisher_.publish (cloud);
+}
+
+void Node::PublishCurrentMapPointsColor (std::vector<ORB_SLAM2::MapPoint*> map_points) {
+  PointCloud::Ptr pointcloud_msg(new PointCloud);
+  pointcloud_msg->header.frame_id = "map";
+  PointT p;
+
+  for(int i = 0; i < map_points.size(); i++){
+    p.x = map_points[i]->GetWorldPos().at<float>(2);
+    p.y = map_points[i]->GetWorldPos().at<float>(0) * -1;
+    p.z = map_points[i]->GetWorldPos().at<float>(1) * -1;
+    p.r = 255;
+    p.g = 128;
+    p.b = 0;
+    pointcloud_msg->points.push_back(p);
+
+  }
+
+  current_map_points_publisher_.publish(pointcloud_msg);
+
 }
 
 tf2::Transform Node::TransformToTarget (tf2::Transform tf_in, std::string frame_in, std::string frame_target) {
