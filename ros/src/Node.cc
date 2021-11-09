@@ -63,6 +63,7 @@ void Node::Init () {
   if (publish_pointcloud_param_) {
     map_points_publisher_ = node_handle_.advertise<sensor_msgs::PointCloud2> (name_of_node_+"/map_points", 1);
     current_map_points_publisher_ = node_handle_.advertise<PointCloud> (name_of_node_+"/current_map_points", 1);
+    current_key_points_publisher_ = node_handle_.advertise<std_msgs::Float32MultiArray> (name_of_node_+"/current_key_points", 1);
   }
 
   // Enable publishing camera's pose as PoseStamped message
@@ -91,7 +92,7 @@ void Node::Update () {
 
   if (publish_pointcloud_param_) {
     PublishMapPoints (orb_slam_->GetAllMapPoints());
-    PublishCurrentMapPointsColor (orb_slam_->current_map_points);
+    PublishCurrentMapPointsColor (orb_slam_->current_map_points, orb_slam_->current_key_points);
   }
 
   PublishGBAStatus (orb_slam_->isRunningGBA());
@@ -104,10 +105,22 @@ void Node::PublishMapPoints (std::vector<ORB_SLAM2::MapPoint*> map_points) {
   map_points_publisher_.publish (cloud);
 }
 
-void Node::PublishCurrentMapPointsColor (std::vector<ORB_SLAM2::MapPoint*> map_points) {
+void Node::PublishCurrentMapPointsColor (std::vector<ORB_SLAM2::MapPoint*> map_points, std::vector<cv::KeyPoint> map_keys) {
   PointCloud::Ptr pointcloud_msg(new PointCloud);
   pointcloud_msg->header.frame_id = "map";
   PointT p;
+
+  std_msgs::Float32MultiArray msg;
+  msg.layout.dim.push_back(std_msgs::MultiArrayDimension());
+  msg.layout.dim.push_back(std_msgs::MultiArrayDimension());
+  msg.layout.dim[0].label = "height";
+  msg.layout.dim[1].label = "width";
+  msg.layout.dim[0].size = map_points.size(); //H
+  msg.layout.dim[1].size = 2; //W
+  msg.layout.dim[0].stride = map_points.size()*2; //H*W
+  msg.layout.dim[1].stride = 2; //W
+  msg.layout.data_offset = 0;
+  std::vector<float> vec(map_points.size()*2, 0); //H*W
 
   for(int i = 0; i < map_points.size(); i++){
     p.x = map_points[i]->GetWorldPos().at<float>(2);
@@ -118,10 +131,16 @@ void Node::PublishCurrentMapPointsColor (std::vector<ORB_SLAM2::MapPoint*> map_p
     p.b = 0;
     pointcloud_msg->points.push_back(p);
 
+    // add key points data
+    vec[i*2 + 0] = map_keys[i].pt.x;
+    vec[i*2 + 1] = map_keys[i].pt.y;
+
   }
 
   current_map_points_publisher_.publish(pointcloud_msg);
 
+  msg.data = vec;
+  current_key_points_publisher_.publish(msg);
 }
 
 tf2::Transform Node::TransformToTarget (tf2::Transform tf_in, std::string frame_in, std::string frame_target) {

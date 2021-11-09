@@ -138,6 +138,7 @@ public:
     std::vector<MapPoint*> GetAllMapPoints();
     std::vector<MapPoint*> GetCurrentMapPoints();
     std::vector<MapPoint*> current_map_points;
+    std::vector<cv::KeyPoint> current_key_points;
 
 private:
     bool SetCallStackSize (const rlim_t kNewStackSize);

@@ -276,16 +276,20 @@ void System::TrackMonocular(const cv::Mat &im, const double &timestamp)
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
 
     current_map_points.clear();
+    current_key_points.clear();
 
     for(int i = 0; i < mpTracker->mCurrentFrame.N; i++){
 
         if(mpTracker->mCurrentFrame.mvpMapPoints[i] && !mpTracker->mCurrentFrame.mvbOutlier[i]){
             current_map_points.insert(current_map_points.end(), mpTracker->mCurrentFrame.mvpMapPoints[i]);
+            current_key_points.insert(current_key_points.end(), mpTracker->mCurrentFrame.mvKeysUn[i]);
 
             // std::cout << mpTracker->mCurrentFrame.mvpMapPoints[i]->GetWorldPos().at<float>(0) << std::endl;
             // std::cout << mpTracker->mCurrentFrame.mvpMapPoints[i]->GetWorldPos().at<float>(1) << std::endl;
             // std::cout << mpTracker->mCurrentFrame.mvpMapPoints[i]->GetWorldPos().at<float>(2) << std::endl;
 
+            // std::cout << mpTracker->mCurrentFrame.mvKeysUn[i].pt.x << std::endl;
+            // std::cout << mpTracker->mCurrentFrame.mvKeysUn[i].pt.y << std::endl;
         }
 
     }

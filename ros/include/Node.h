@@ -77,7 +77,7 @@ class Node
 
   private:
     void PublishMapPoints (std::vector<ORB_SLAM2::MapPoint*> map_points);
-    void PublishCurrentMapPointsColor (std::vector<ORB_SLAM2::MapPoint*> map_points);
+    void PublishCurrentMapPointsColor (std::vector<ORB_SLAM2::MapPoint*> map_points, std::vector<cv::KeyPoint> map_keys);
     void PublishPositionAsTransform (cv::Mat position);
     void PublishPositionAsPoseStamped(cv::Mat position);
     void PublishGBAStatus (bool gba_status);
@@ -99,6 +99,7 @@ class Node
     image_transport::Publisher rendered_image_publisher_;
     ros::Publisher map_points_publisher_;
     ros::Publisher current_map_points_publisher_;
+    ros::Publisher current_key_points_publisher_;
     ros::Publisher pose_publisher_;
     ros::Publisher status_gba_publisher_;
 
