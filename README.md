@@ -2,6 +2,21 @@
 **ORB-SLAM2 Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2)).
 The original implementation can be found [here](https://github.com/raulmur/ORB_SLAM2.git).
 
+## _Update: 2021.11.09_
+This is an expansion of original [orb_slam_2_ros](https://github.com/appliedAI-Initiative/orb_slam_2_ros). 
+In order to approach the requirements in world, the following new features have been added:
+- _**New Subscriber Topics**_
+  - _**/orb_slam2_mono/current_map_points:** obtain the current 'Pointcloud' on view, and present in **Orange**._
+  - _**/orb_slam2_mono/current_key_points:** obtain the current 'ORB Feature Points' on view, and correspond to the index of pointcloud list._
+
+
+- _**New Launch File**_
+  - _**DJI Mavic Mini:** Provide the camera parameters of DJI Mavic Mini._
+
+<div align="center">
+  <img src="images/current_pointcloud.png"/>
+</div>
+
 # ORB-SLAM2 ROS node
 This is the ROS implementation of the ORB-SLAM2 real-time SLAM library for **Monocular**, **Stereo** and **RGB-D** cameras that computes the camera trajectory and a sparse 3D reconstruction (in the stereo and RGB-D case with true scale). It is able to detect loops and relocalize the camera in real time. This implementation removes the Pangolin dependency, and the original viewer. All data I/O is handled via ROS topics. For visualization you can use RViz. This repository is maintained by [Lennart Haller](http://lennarthaller.de) on behalf of [appliedAI](http://appliedai.de).
 ## Features
